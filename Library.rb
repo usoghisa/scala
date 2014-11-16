@@ -80,29 +80,57 @@ class Library
     readFile()
     @@members = Hash.new
     @@isLibOpen=false
-    currentMember=nil ###
-  end
-  
+    @@currentMember=nil ###
+  end  
   def getMember()
     return @@members
-  end
+  end 
   def addMember(name, obj)
     @@members[name] = obj
   end
+  def libIsOpen()
+    (@@isLibOpen == false) ? (raise Exception.new(" \n The library is not open")) : return 
+  end
   
-  def issue_card(name_of_member)
-    if @@isLibOpen==false
-      raise Exception.new(" \n The library is not open")
-    else
-      ####################  puts  name_of_member.class u= "k" puts "FFF2____ #{u == :k.to_s}"
-       getMember().each_pair do |key,obj|
-        if (key == name_of_member.to_sym) # the k is symbol
-          return "Sorry this #{name_of_member} already exist"
-        end
+def find_overdue_books() 
+   libIsOpen() 
+  puts"@@ currentMember.name #{@@currentMember.bookBorrowed()}" 
+end  
+  def serve(name_of_member) 
+    libIsOpen()
+    if (@@currentMember != nil)  
+      puts "sorry #{@@currentMember.name} but now i serve #{name_of_member}"
+      @@currentMember = nil
+    end  
+    if (@@currentMember == nil)# puts getMember()
+      if(isMember(name_of_member) == true)
+        @@currentMember = getMember()[name_of_member.to_sym]
+        puts " @@currentMember.name is #{@@currentMember.name} "
+        return "Now serving #{@@currentMember.name} "
+      else
+        return "Sorry #{name_of_member} you must be a member to be served "
       end
     end
-    addMember(name_of_member.to_sym, Member.new(name_of_member,"bbkLib"))
-    return "\n Welcome #{name_of_member} to bbk"
+  end
+  
+  def isMember(name_of_member) #u= "k" puts "FFF2____ #{u == :k.to_s}"    puts  name_of_member
+    found = false
+    getMember().each_pair do |key,obj|
+      if (key == name_of_member.to_sym)
+        found = true
+      end
+    end
+    return found
+  end 
+        
+  def issue_card(name_of_member)
+    libIsOpen()
+    if (isMember(name_of_member) == false)
+      addMember(name_of_member.to_sym, Member.new(name_of_member,"bbkLib"))
+      return "\n Welcome #{name_of_member} to bbk"
+    else
+      return "Sorry this #{name_of_member} already exist"
+    end
   end
     
   def open()
@@ -226,10 +254,28 @@ l.find_all_overdue_books()
 begin
   puts "issue_card 1   #{l.issue_card('gino')}"
   puts "issue_card 2   #{l.issue_card('gino')}"
+  puts "serve('ugo')   #{l.serve('ugo')}"
+  # puts "serve('kkk')   #{l.serve('kkk')}" 
+  puts "find_overdue_book()   #{l.find_overdue_books()}" 
 rescue Exception => e
   puts e.message
 end
 
 
-
 =begin
+  b= Book.new(111,"ttt","aaa")
+  b2= Book.new(222,"ttt","bbb")
+  b.check_out(20141215)
+  #puts b.title()
+  #puts b.inspect
+  #puts b.to_s
+
+  m = Member.new("ug","lug")
+  m.check_out(b)
+  m.check_out(b2)
+  #m.give_back(b2)
+  puts m.get_books()
+  m.send_overdue_notice(" book is overdue")
+=end
+
+###############################
