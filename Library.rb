@@ -82,6 +82,29 @@ class Library
     @@isLibOpen=false
     currentMember=nil ###
   end
+  
+  def getMember()
+    return @@members
+  end
+  def addMember(name, obj)
+    @@members[name] = obj
+  end
+  
+  def issue_card(name_of_member)
+    if @@isLibOpen==false
+      raise Exception.new(" \n The library is not open")
+    else
+      ####################  puts  name_of_member.class u= "k" puts "FFF2____ #{u == :k.to_s}"
+       getMember().each_pair do |key,obj|
+        if (key == name_of_member.to_sym) # the k is symbol
+          return "Sorry this #{name_of_member} already exist"
+        end
+      end
+    end
+    addMember(name_of_member.to_sym, Member.new(name_of_member,"bbkLib"))
+    return "\n Welcome #{name_of_member} to bbk"
+  end
+    
   def open()
     if @@isLibOpen==true
       raise Exception.new("The library is already open")
@@ -156,12 +179,7 @@ class Library
   def getBookList ()
     return @@books
   end
-  def getMember()
-    return @@members
-  end
-  def addMember(name, obj)
-    @@members[name] = obj
-  end
+
   def createCalendar()
     if @@isCalOn == false
       @@calendar=Calendar.new()
@@ -175,7 +193,7 @@ end
 ###########################################START
 l=Library.new();
 begin
-  puts l.open()
+  puts " The Library Is open #{l.open()}"
   l.open()
 rescue Exception => e
   puts e.message
@@ -186,6 +204,8 @@ l.getBookList()[1].check_out(20141215)
 # add member to lib
 l.addMember(:ugo, Member.new("ugo","bbkLib"))
 l.addMember(:pep, Member.new("pep","bbkLib"))
+#l.addMember(:nino, Member.new("nino","bbkLib"))  
+
 
 =begin 
 =end
@@ -195,26 +215,21 @@ l.getMember()[:ugo].check_out(l.getBookList()[1])
 l.getBookList()[0].check_out(20141215) 
 l.getBookList()[1].check_out(20141215) 
  
-puts l.getMember()[:ugo].inspect
+# puts l.getMember()[:ugo].inspect
 puts l.getMember()[:ugo].bookBorrowed[0].getId()
 puts l.getMember()[:ugo].bookBorrowed[0].get_due_date
 puts l.getMember()[:ugo].bookBorrowed[1].getId()
 
 
 l.find_all_overdue_books()
+# puts l.getMember() 
+begin
+  puts "issue_card 1   #{l.issue_card('gino')}"
+  puts "issue_card 2   #{l.issue_card('gino')}"
+rescue Exception => e
+  puts e.message
+end
+
+
 
 =begin
-  b= Book.new(111,"ttt","aaa")
-  b2= Book.new(222,"ttt","bbb")
-  b.check_out(20141215)
-  #puts b.title()
-  #puts b.inspect
-  #puts b.to_s
-
-  m = Member.new("ug","lug")
-  m.check_out(b)
-  m.check_out(b2)
-  #m.give_back(b2)
-  puts m.get_books()
-  m.send_overdue_notice(" book is overdue")
-=end
