@@ -94,8 +94,8 @@ class Library
   def custIsServe()
     (@@currentMember == nil) ? (raise Exception.new(" \n No member is currently been served")) : return 
   end
-# current member book out and over   # GO find_all_overdue_books() TODO..........
-def find_overdue_books() ####################  todo see all_overdue_books()
+# current member book out and over   
+def find_overdue_books() 
   libIsOpen()
   custIsServe()
   #puts"@@ currentMember.name book #{@@currentMember.bookBorrowed()[0].title}"
@@ -113,19 +113,52 @@ def find_overdue_books() ####################  todo see all_overdue_books()
           return
         end       
 end
-def check_in(book_numbers)
-  custIsServe() 
+def check_in(book_numbers)################# TODO remouve from @@books add book id returned
+  libIsOpen() 
+  custIsServe()
   for i in (0..@@currentMember.bookBorrowed().length-1)
     if(@@currentMember.bookBorrowed()[i].id() == book_numbers )
         @@currentMember.bookBorrowed()[i] = nil
         @@currentMember.bookBorrowed().delete(nil)
-        puts "ARRAY #{@@currentMember.bookBorrowed()}"  
-        return 
+        return "@@currentMember.name #{@@currentMember.name} has return book id #{book_numbers} bookBorrowed()ARRAY #{@@currentMember.bookBorrowed()}"
+    else
+      raise Exception.new(" \n The member does have book id #{book_numbers}")
     end 
   end  
 end
- 
+## Finds those Books whose title or author (or both) contains this string. case insensitive *KKK and kkk*
+def search(string)
+  #http://ruby-doc.org/core-2.1.5/String.html
+  a = "cruel world"
+  a = a.split
+  print a
+  # puts a.scan(/\w+/) 
+  print a[1].scan(/.../)    
   
+  s = string
+  puts s[0, 4]  # => abcdef
+
+  #puts s[-4,4]  
+  puts s[s.length - 4,s.length]  
+  
+# http://docs.ruby-lang.org/en/trunk/Regexp.html
+  
+# If case is irrelevant, then a case-insensitive regular expression is a good solution:
+  u="bcd"
+return 'aBcDe' =~ /#{u}/i  # evaluates as true which is 1
+  
+  
+  
+  
+  
+  
+  
+  
+ # my_string = string
+ # if my_string.include? "cde"
+ #    puts "String includes 'cde'"
+ # end
+end  
   def serve(name_of_member) 
     libIsOpen()
     if (@@currentMember != nil)  
@@ -172,8 +205,7 @@ end
       return "Today is day +1  #{@@calendar.date()}"
     end
   end
-  
-  
+ 
 def loopBookArray(member)
       # [0] noOver [1] Over
       bookOut=[[],[]]   
@@ -277,6 +309,7 @@ puts " The Library Is open #{l.open()}"
 
 
 puts "ooo"
+puts "getBookList() #{l.getBookList()}"
 l.getBookList()[1].check_out(20141215)
 # add member to lib
 l.addMember(:ugo, Member.new("ugo","bbkLib"))
@@ -312,8 +345,25 @@ l.find_all_overdue_books()
   puts "call find_overdue_books()"
   puts "#{l.find_overdue_books()}"
   puts "l.check_in(1)  #{l.check_in(1)} "  
-  puts "l.check_in(2)  #{l.check_in(2)} "   
-  
+  puts "l.check_in(22)  #{l.check_in(2)} "   
+ puts l.search("qwerty  xcvbnm")
 rescue Exception => e
   puts e.message
 end
+
+
+=begin
+  b= Book.new(111,"ttt","aaa")
+  b2= Book.new(222,"ttt","bbb")
+  b.check_out(20141215)
+  #puts b.title()
+  #puts b.inspect
+  #puts b.to_s
+
+  m = Member.new("ug","lug")
+  m.check_out(b)
+  m.check_out(b2)
+  #m.give_back(b2)
+  puts m.get_books()
+  m.send_overdue_notice(" book is overdue")
+=end
