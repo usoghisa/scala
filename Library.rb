@@ -127,26 +127,67 @@ def check_in(book_numbers)################# TODO remouve from @@books add book i
   end  
 end
 ## Finds those Books whose title or author (or both) contains this string. case insensitive *KKK and kkk*
-def search(string)
-  #http://ruby-doc.org/core-2.1.5/String.html
-  a = "cruel world"
-  a = a.split
-  print a
-  # puts a.scan(/\w+/) 
-  print a[1].scan(/.../)    
-  
-  s = string
-  puts s[0, 4]  # => abcdef
+=begin
+  Finds those Books whose title or author (or both) contains this string.
+  For example, the string "tact" might return, among other things,
+  the book Contact, by Carl Sagan. The search should be case insensitive;
+  that is, "saga" would also return this book.
+=end
 
-  #puts s[-4,4]  
-  puts s[s.length - 4,s.length]  
+def search(string)
+  ################ goood 
+  print "&&& #{@@books[3].author()} "  
+  for i in 0 ... @@books.size-1
+    print "#{@@books[i].title()}"
+    print "#{@@books[i].author()}" 
+    
+    
+    
+        
+  end
+#  title,author = line.split(',').map(&:strip)
+  s= " saga ArL  "
+  s= s.split(' ').map(&:strip) 
+  s2= " Cont LIEN  "
+  # s2[0]
+  n = @@books[3].author().split(' ').map(&:strip) 
+  t = @@books[3].title.split(' ').map(&:strip) 
   
-# http://docs.ruby-lang.org/en/trunk/Regexp.html
+  print "\n n[0] \n"+"#{n[0].downcase}"
+  print "\n n[1] \n"+"#{n[1].downcase}"
   
-# If case is irrelevant, then a case-insensitive regular expression is a good solution:
-  u="bcd"
-return 'aBcDe' =~ /#{u}/i  # evaluates as true which is 1
+  print "\n s[0] \n"+"#{s[0].downcase}"
+  print "\n s[1] \n"+"#{s[1].downcase}"  
   
+  print "\n ~~00 "+"#{n[0].downcase.include?(s[0].strip.downcase)}\n "
+  print "~~01 "+"#{n[0].downcase.include?(s[1].strip.downcase)}\n"
+  print "~~10 "+"#{n[1].downcase.include?(s[0].strip.downcase)}\n"
+  print "~~11 "+"#{n[1].downcase.include?(s[1].strip.downcase)}\n"
+  
+    
+  print "~~n0 \n"+"#{n[1].downcase.include?(s.strip.downcase)}"  
+  print "\n ~~ \n"+"#{t.downcase.include?(s2[1].strip.downcase)}"
+  ################ goood
+
+
+  
+=begin  #http://ruby-doc.org/core-2.1.5/String.html
+    a = "cruel world"
+    a = a.split
+    print a
+    # puts a.scan(/\w+/) 
+    print a[1].scan(/.../)    
+    
+    s = string
+    puts s[0, 4]  # => abcdef
+  
+    #puts s[-4,4]  
+    puts s[s.length - 4,s.length]   
+    # http://docs.ruby-lang.org/en/trunk/Regexp.html  
+    # If case is irrelevant, then a case-insensitive regular expression is a good solution:
+    u="bcd"
+    return 'aBcDe' =~ /#{u}/i  # evaluates as true which is 1
+=end  
   
   
   
@@ -350,20 +391,3 @@ l.find_all_overdue_books()
 rescue Exception => e
   puts e.message
 end
-
-
-=begin
-  b= Book.new(111,"ttt","aaa")
-  b2= Book.new(222,"ttt","bbb")
-  b.check_out(20141215)
-  #puts b.title()
-  #puts b.inspect
-  #puts b.to_s
-
-  m = Member.new("ug","lug")
-  m.check_out(b)
-  m.check_out(b2)
-  #m.give_back(b2)
-  puts m.get_books()
-  m.send_overdue_notice(" book is overdue")
-=end
