@@ -1,3 +1,5 @@
+require 'set'
+
 class Calendar
   # attr_accessor:date
   attr_reader(:date)
@@ -8,7 +10,7 @@ class Calendar
   def get_date()
     t = Time.now
     d= t.strftime("%Y%m%d")
-    return  d.to_i
+    return  t
   end
 
   def advance()
@@ -19,8 +21,9 @@ end
 
 class Book
   attr_reader(:id, :title, :author, :dueDate )
+  
   def initialize(id,title,author)
-    @dueDate = 00000000
+    @dueDate = Time.now
     @borrowPeriod = 6
     @id = id
     @title = title
@@ -89,7 +92,7 @@ class Library
     @@members[name] = obj
   end
   def libIsOpen()
-    (@@isLibOpen == false) ? (raise Exception.new(" \n The library is not open")) : return  
+    (@@isLibOpen == false) ? (raise Exception.new("The library is not open")) : return  
   end
   def custIsServe()
     (@@currentMember == nil) ? (raise Exception.new(" \n No member is currently been served")) : return 
@@ -117,7 +120,7 @@ def check_in(book_numbers)################# TODO remouve from @@books add book i
   libIsOpen() 
   custIsServe()
   for i in (0..@@currentMember.bookBorrowed().length-1)
-    if(@@currentMember.bookBorrowed()[i].id() == book_numbers )
+    if  (@@currentMember.bookBorrowed()[i].id() == book_numbers )
         @@currentMember.bookBorrowed()[i] = nil
         @@currentMember.bookBorrowed().delete(nil)
         return "@@currentMember.name #{@@currentMember.name} has return book id #{book_numbers} bookBorrowed()ARRAY #{@@currentMember.bookBorrowed()}"
@@ -126,6 +129,81 @@ def check_in(book_numbers)################# TODO remouve from @@books add book i
     end 
   end  
 end
+=begin
+  Checks out the book to the member currently being served (there must be one!), or tells why the operation is not permitted. 
+  The book_ids could have been found by a recent call to the search method. Checking out a book will involve both telling the book that
+  it is checked out and removing the book from this library's collection of available books.
+  If successful, returns "n books have been checked out to name_of_member.". 
+  EXCEPTION not open No cust serv  "The library does not have bookid."
+=end
+
+def check_out(book_ids) #1..n book_ids @@currentMember.name
+  libIsOpen() 
+  custIsServe()
+  if (@@currentMember.get_books().size > 2) 
+    return "Sorry #{@@currentMember.name} you check out 3 books already"
+  end
+  findBook = false
+  #dueTime = (Time.now + (7*24*60*60)).strftime("%Y%m%d") # add 7 day
+  dueTime = (Time.now + (7*24*60*60)) 
+  for iB in 0 ... @@books.size
+   # print "#{@@books[iB].id()} "+"#{@@books[iB].title()} "+"#{@@books[iB].author()} \n" 
+    if (@@books[iB].id() == book_ids)
+      findBook = true
+      puts  @@books[iB].title()
+      @@books[iB].check_out(dueTime)
+      # @@books[iB].get_due_date()
+      @@currentMember.check_out(@@books[iB])
+      # @@currentMember.get_books()
+      removeIndex = iB 
+    end 
+  end
+  #puts @@books 
+  if findBook == false
+    findBook =  "The library does not have book  id #{book_ids}"
+    return findBook
+  else
+   @@books.delete_at(removeIndex)
+   return "books with id #{book_ids} have been checked out to #{@@currentMember.name}." 
+  end  
+end
+
+def renew(book_ids) #1..n book_ids
+  t=Time.now
+  puts "_____"
+  puts t.class
+  puts "_____"
+  for iB in 0 ... @@books.size 
+  puts @@books[iB].get_due_date()
+end
+
+  libIsOpen() 
+  custIsServe()
+  findBook = false  
+  for iB in 0 ... @@currentMember.get_books().size
+     # print "#{@@books[iB].id()} "+"#{@@books[iB].title()} "+"#{@@books[iB].author()} \n" 
+      if (@@currentMember.get_books()[iB].id() == book_ids)
+        puts @@currentMember.get_books()[iB].get_due_date()+(7*24*60*60) # add 7 day
+        findBook = true
+        #dueTime = @@currentMember.get_books()[iB].get_due_date()
+        #dueTime = dueTime + (7*24*60*60) # add 7 day
+        t=Time.now
+                @@currentMember.get_books()[iB].check_out(t) 
+        return  @@currentMember.get_books()[iB].get_due_date()
+      end 
+   end  
+   if (findBook == false)
+     raise Exception.new("The member does not have book id #{book_ids}")
+   end    
+end
+
+
+
+
+
+
+
+
 ## Finds those Books whose title or author (or both) contains this string. case insensitive *KKK and kkk*
 =begin
   Finds those Books whose title or author (or both) contains this string.
@@ -135,18 +213,17 @@ end
 =end
 
 def search(string)
-  ################ goood 
-  print "&&& #{@@books[3].author()} "  
-  for i in 0 ... @@books.size-1
-    print "#{@@books[i].title()}"
-    print "#{@@books[i].author()}" 
-    
-    
-    
-        
+=begin    
+  ################ goood for preparation 
+  print "&&& #{@@books[4].author()} \n"
+  n1 = @@books[1].author().split(' ').map(&:strip) 
+  n1.each{|i| puts i} 
+     
+  for i in 0 ... @@books.size
+    print "#{@@books[i].id()} "+"#{@@books[i].title()} "+"#{@@books[i].author()} \n"    
   end
 #  title,author = line.split(',').map(&:strip)
-  s= " saga ArL  "
+  s= " saga ArL tact  ttt1"
   s= s.split(' ').map(&:strip) 
   s2= " Cont LIEN  "
   # s2[0]
@@ -154,23 +231,81 @@ def search(string)
   t = @@books[3].title.split(' ').map(&:strip) 
   
   print "\n n[0] \n"+"#{n[0].downcase}"
-  print "\n n[1] \n"+"#{n[1].downcase}"
+  print " n[1] \n"+"#{n[1].downcase}"
   
-  print "\n s[0] \n"+"#{s[0].downcase}"
-  print "\n s[1] \n"+"#{s[1].downcase}"  
+  print " s[0] \n"+"#{s[0].downcase}"
+  print " s[1] \n"+"#{s[1].downcase}"  
   
   print "\n ~~00 "+"#{n[0].downcase.include?(s[0].strip.downcase)}\n "
   print "~~01 "+"#{n[0].downcase.include?(s[1].strip.downcase)}\n"
   print "~~10 "+"#{n[1].downcase.include?(s[0].strip.downcase)}\n"
   print "~~11 "+"#{n[1].downcase.include?(s[1].strip.downcase)}\n"
-  
+  ################ end goood for preparation
+=end
+  string = string.squeeze(' ').strip
+  libIsOpen() 
+  result= nil 
+
+     if (string.size > 3)
+       s= string.split(' ').map(&:strip)
+     else
+       result = "Search string must contain at least four characters."
+       return result
+     end
+      
+  foundBook = Set.new []  
     
-  print "~~n0 \n"+"#{n[1].downcase.include?(s.strip.downcase)}"  
-  print "\n ~~ \n"+"#{t.downcase.include?(s2[1].strip.downcase)}"
-  ################ goood
-
-
+  ## search for title author  aux func
+  def searchBooks(n,s,foundBook,iB)
+    for i in 0 ... n.size
+       for j in 0 ... s.size
+         print "Loop author #{n[i].downcase.include?(s[j].strip.downcase)}\n"
+         if (n[i].downcase.include?(s[j].strip.downcase))
+           foundBook.add(@@books[iB])
+         end 
+       end    
+     end
+  end  
+   
+for iB in 0 ... @@books.size
+  print "#{@@books[iB].id()} "+"#{@@books[iB].title()} "+"#{@@books[iB].author()} \n" 
+  authorName = @@books[iB].author().split(' ').map(&:strip)
+    searchBooks(authorName,s,foundBook,iB)
+  titleName = @@books[iB].title.split(' ').map(&:strip)
+    searchBooks(titleName,s,foundBook,iB)   
+=begin  
+  # chech if string is in  author
+  for i in 0 ... n.size
+    for j in 0 ... s.size
+      print "Loop author #{n[i].downcase.include?(s[j].strip.downcase)}\n"
+      if (n[i].downcase.include?(s[j].strip.downcase))
+        set1.add(@@books[iB])
+      end 
+    end    
+  end
   
+  # chech if string is in  title
+  for i in 0 ... t.size
+    for j in 0 ... s.size
+      ##print "Loop title #{t[i].downcase.include?(s[j].strip.downcase)}\n"
+      if (t[i].downcase.include?(s[j].strip.downcase))
+        set1.add(@@books[iB])
+      end 
+    end    
+  end
+=end 
+  
+end
+  
+puts"__________"
+if (foundBook.size == 0)
+  return "No books found."
+else
+   foundBook.each{|i| puts i} 
+    
+end  
+puts"__________"
+return    
 =begin  #http://ruby-doc.org/core-2.1.5/String.html
     a = "cruel world"
     a = a.split
@@ -188,17 +323,7 @@ def search(string)
     u="bcd"
     return 'aBcDe' =~ /#{u}/i  # evaluates as true which is 1
 =end  
-  
-  
-  
-  
-  
-  
-  
- # my_string = string
- # if my_string.include? "cde"
- #    puts "String includes 'cde'"
- # end
+
 end  
   def serve(name_of_member) 
     libIsOpen()
@@ -246,7 +371,19 @@ end
       return "Today is day +1  #{@@calendar.date()}"
     end
   end
- 
+def close()
+  if (@@isLibOpen == true)
+     @@isLibOpen = false
+    return "Good night"
+  else
+    raise Exception.new("The library is not open.")
+  end
+end
+def quit()
+  puts find_overdue_books() 
+  return "The library is now closed for renovations"
+   
+end
 def loopBookArray(member)
       # [0] noOver [1] Over
       bookOut=[[],[]]   
@@ -344,14 +481,11 @@ end
 begin
 l=Library.new();
 puts " The Library Is open #{l.open()}"
-##l.open()
-
-
-
+#l.open()
 
 puts "ooo"
 puts "getBookList() #{l.getBookList()}"
-l.getBookList()[1].check_out(20141215)
+#l.getBookList()[1].check_out(20141215)
 # add member to lib
 l.addMember(:ugo, Member.new("ugo","bbkLib"))
 l.addMember(:pep, Member.new("pep","bbkLib"))
@@ -363,8 +497,8 @@ l.addMember(:pep, Member.new("pep","bbkLib"))
 ### Borrow Book
 l.getMember()[:ugo].check_out(l.getBookList()[0])
 l.getMember()[:ugo].check_out(l.getBookList()[1])
-l.getBookList()[0].check_out(20141215) 
-l.getBookList()[1].check_out(20141215) 
+#l.getBookList()[0].check_out(20141215) 
+#l.getBookList()[1].check_out(20141215) 
  
 # puts l.getMember()[:ugo].inspect
 puts l.getMember()[:ugo].bookBorrowed[0].getId()
@@ -387,7 +521,39 @@ l.find_all_overdue_books()
   puts "#{l.find_overdue_books()}"
   puts "l.check_in(1)  #{l.check_in(1)} "  
   puts "l.check_in(22)  #{l.check_in(2)} "   
- puts l.search("qwerty  xcvbnm")
+  #puts l.search("   saga ArL tact  ttt1 ")
+  puts l.search("   TTTT  autho ")
+  #foundBook.each{|i| puts i} 
+#puts "CALL check_out(book_ids 33) #{l.check_out(33)} "    
+puts "CALL check_out(book_ids 1) #{l.check_out(1)} "   
+#puts "CALL check_out(book_ids 2) #{l.check_out(2)} "
+#puts "CALL check_out(book_ids 3) #{l.check_out(3)} "      
+#puts "CALL check_out(book_ids 4) #{l.check_out(4)} " 
+puts "CALL renew(book_ids 1) #{l.renew(1)} " 
+#puts "CALL renew(book_ids 22) #{l.renew(22)} "
+#puts "CALL close() 1 #{l.close()} "
+#puts "CALL close() 2 #{l.close()} "
+#puts "CALL quit() #{l.quit()} "
 rescue Exception => e
   puts e.message
 end
+
+
+
+=begin
+  b= Book.new(111,"ttt","aaa")
+  b2= Book.new(222,"ttt","bbb")
+  b.check_out(20141215)
+  #puts b.title()
+  #puts b.inspect
+  #puts b.to_s
+
+  m = Member.new("ug","lug")
+  m.check_out(b)
+  m.check_out(b2)
+  #m.give_back(b2)
+  puts m.get_books()
+  m.send_overdue_notice(" book is overdue")
+=end
+
+###############################
