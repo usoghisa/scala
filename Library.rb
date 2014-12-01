@@ -84,6 +84,9 @@ class Library
     @@members = Hash.new
     @@isLibOpen=false
     @@currentMember=nil ###
+  end
+  def getCurrentMember()
+    return @@currentMember
   end  
   def getMember()
     return @@members
@@ -117,6 +120,9 @@ def find_overdue_books()
         end       
 end
 def check_in(book_numbers)################# TODO remouve from @@books add book id returned
+  puts "__________"
+  puts book_numbers
+  puts "__________"
   libIsOpen() 
   custIsServe()
   findBook = false
@@ -124,14 +130,17 @@ def check_in(book_numbers)################# TODO remouve from @@books add book i
     raise Exception.new(" The member does have book id #{book_numbers}")
     return 
   end
-  for i in (0..@@currentMember.bookBorrowed().size)
-    findBook = true
+  for i in (0..(@@currentMember.bookBorrowed().size)-1)
+   
     if  (@@currentMember.bookBorrowed()[i].id() == book_numbers )
-        @@currentMember.bookBorrowed()[i] = nil
-        @@currentMember.bookBorrowed().delete(nil)
+        findBook = true
+        #@@currentMember.bookBorrowed()[i] = nil
+        #@@currentMember.bookBorrowed().delete(nil)
+        @@currentMember.bookBorrowed().delete_at(i)
         return "@@currentMember.name #{@@currentMember.name} has return book id #{book_numbers} bookBorrowed()ARRAY #{@@currentMember.bookBorrowed()}"
     end 
   end
+  
   if(findBook == false)
       raise Exception.new(" The member does have book id #{book_numbers}")
   end  
@@ -330,6 +339,7 @@ return
 end  
   def serve(name_of_member) 
     libIsOpen()
+    puts "@@currentMember #{@@currentMember}"
     if (@@currentMember != nil)  
       puts "sorry #{@@currentMember.name} but now i serve #{name_of_member}"
       @@currentMember = nil
@@ -376,12 +386,14 @@ end
   end
 def close()
   if (@@isLibOpen == true)
-     @@isLibOpen = false
+      @@isLibOpen = false
+      @@currentMember = nil
     return "Good night"
   else
     raise Exception.new("The library is not open.")
   end
 end
+
 def quit()
   #puts find_overdue_books() 
   return "The library is now closed for renovations"  
@@ -391,7 +403,7 @@ def loopBookArray(member)
       bookOut=[[],[]]   
       for i in 0 ... member.get_books.size############ < @@calendar
         if  ((member.get_books.size > 0)&&
-        (member.get_books[i].get_due_date() >= @calendar.get_date() ))
+        (member.get_books[i].get_due_date() <= @calendar.get_date() ))
           # bookOut[1].push(member.get_books[i].title())
           bookOut[1].push(member.get_books[i])
         end
@@ -522,6 +534,41 @@ puts "CALL renew(book_ids 1) #{l.renew(1)} "
 puts "CALL close() 1 #{l.close()} "
 #puts "CALL close() 2 #{l.close()} "
 puts "CALL quit() #{l.quit()} " 
+
+puts "The Library Is open #{l.open()}"
+puts "The custIsServe() #{l.custIsServe()}"
 rescue Exception => e
   puts e.message
 end
+
+
+puts "call serve('ugo')   #{l.serve('ugo')}"
+puts "l.getCurrentMember.name)   #{l.getCurrentMember.name }"
+#puts "l.getCurrentMember.name)   #{l.getCurrentMember.bookBorrowed}"
+#puts "find_overdue_books()  #{l.find_overdue_books()}"
+#puts "find_overdue_books()  #{l.find_overdue_books()}"
+puts "l.getCurrentMember.bookBorrowed)   "
+n=[]
+
+
+puts "call serve('pep') #{l.serve('pep')}" 
+
+sz = (l.getCurrentMember.bookBorrowed.size)
+for i in 0..(sz-1) do
+   n.push(l.getCurrentMember.bookBorrowed[i].getId())
+   puts n[i]   
+end
+if(n.size > 0)
+  if(n[0] != nil)
+    puts l.check_in(n[0])
+  end
+  if(n[1] != nil)
+    puts l.check_in(n[1])
+  end 
+  if(n[2] != nil)
+    puts l.check_in(n[2])
+  end   
+end
+
+puts "l.getCurrentMember.bookBorrowed)   "
+puts l.getCurrentMember.bookBorrowed.size   
