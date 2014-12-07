@@ -79,11 +79,18 @@ class Library
   @@isCollectionReaded = false
   @calendar = nil
   def initialize()
+    @calendar = Calendar.new()
     createCalendar()
     readFile()
     @@members = Hash.new
     @@isLibOpen=false
     @@currentMember=nil ###
+  end
+  def getBookList()
+    return @@books
+  end
+  def getIsLibOpen()
+     return @@isLibOpen
   end
   def getCurrentMember()
     return @@currentMember
@@ -98,7 +105,7 @@ class Library
     (@@isLibOpen == false) ? (raise Exception.new("The library is not open")) : return  
   end
   def custIsServe()
-    (@@currentMember == nil) ? (raise Exception.new(" \n No member is currently been served")) : return 
+    (@@currentMember == nil) ? (raise Exception.new("No member is currently been served")) : return 
   end
 # current member book out and over   
 def find_overdue_books() 
@@ -152,7 +159,6 @@ end
   If successful, returns "n books have been checked out to name_of_member.". 
   EXCEPTION not open No cust serv  "The library does not have bookid."
 =end
-
 def check_out(book_ids) #1..n book_ids @@currentMember.name
   libIsOpen() 
   custIsServe()
@@ -180,7 +186,7 @@ def check_out(book_ids) #1..n book_ids @@currentMember.name
     return findBook
   else
    @@books.delete_at(removeIndex)
-   return "books with id #{book_ids} have been checked out to #{@@currentMember.name}." 
+   return "The book with id #{book_ids} have been checked out to #{@@currentMember.name}." 
   end  
 end
 
@@ -210,12 +216,6 @@ end
 end
 
 
-
-
-
-
-
-
 ## Finds those Books whose title or author (or both) contains this string. case insensitive *KKK and kkk*
 =begin
   Finds those Books whose title or author (or both) contains this string.
@@ -225,35 +225,6 @@ end
 =end
 
 def search(string)
-=begin    
-  ################ goood for preparation 
-  print "&&& #{@@books[4].author()} \n"
-  n1 = @@books[1].author().split(' ').map(&:strip) 
-  n1.each{|i| puts i} 
-     
-  for i in 0 ... @@books.size
-    print "#{@@books[i].id()} "+"#{@@books[i].title()} "+"#{@@books[i].author()} \n"    
-  end
-#  title,author = line.split(',').map(&:strip)
-  s= " saga ArL tact  ttt1"
-  s= s.split(' ').map(&:strip) 
-  s2= " Cont LIEN  "
-  # s2[0]
-  n = @@books[3].author().split(' ').map(&:strip) 
-  t = @@books[3].title.split(' ').map(&:strip) 
-  
-  print "\n n[0] \n"+"#{n[0].downcase}"
-  print " n[1] \n"+"#{n[1].downcase}"
-  
-  print " s[0] \n"+"#{s[0].downcase}"
-  print " s[1] \n"+"#{s[1].downcase}"  
-  
-  print "\n ~~00 "+"#{n[0].downcase.include?(s[0].strip.downcase)}\n "
-  print "~~01 "+"#{n[0].downcase.include?(s[1].strip.downcase)}\n"
-  print "~~10 "+"#{n[1].downcase.include?(s[0].strip.downcase)}\n"
-  print "~~11 "+"#{n[1].downcase.include?(s[1].strip.downcase)}\n"
-  ################ end goood for preparation
-=end
   string = string.squeeze(' ').strip
   libIsOpen() 
   result= nil 
@@ -284,29 +255,7 @@ for iB in 0 ... @@books.size
   authorName = @@books[iB].author().split(' ').map(&:strip)
     searchBooks(authorName,s,foundBook,iB)
   titleName = @@books[iB].title.split(' ').map(&:strip)
-    searchBooks(titleName,s,foundBook,iB)   
-=begin  
-  # chech if string is in  author
-  for i in 0 ... n.size
-    for j in 0 ... s.size
-      print "Loop author #{n[i].downcase.include?(s[j].strip.downcase)}\n"
-      if (n[i].downcase.include?(s[j].strip.downcase))
-        set1.add(@@books[iB])
-      end 
-    end    
-  end
-  
-  # chech if string is in  title
-  for i in 0 ... t.size
-    for j in 0 ... s.size
-      ##print "Loop title #{t[i].downcase.include?(s[j].strip.downcase)}\n"
-      if (t[i].downcase.include?(s[j].strip.downcase))
-        set1.add(@@books[iB])
-      end 
-    end    
-  end
-=end 
-  
+    searchBooks(titleName,s,foundBook,iB)    
 end
   
 puts"__________"
@@ -318,23 +267,6 @@ else
 end  
 puts"__________"
 return    
-=begin  #http://ruby-doc.org/core-2.1.5/String.html
-    a = "cruel world"
-    a = a.split
-    print a
-    # puts a.scan(/\w+/) 
-    print a[1].scan(/.../)    
-    
-    s = string
-    puts s[0, 4]  # => abcdef
-  
-    #puts s[-4,4]  
-    puts s[s.length - 4,s.length]   
-    # http://docs.ruby-lang.org/en/trunk/Regexp.html  
-    # If case is irrelevant, then a case-insensitive regular expression is a good solution:
-    u="bcd"
-    return 'aBcDe' =~ /#{u}/i  # evaluates as true which is 1
-=end  
 
 end  
   def serve(name_of_member) 
@@ -399,9 +331,9 @@ def quit()
   return "The library is now closed for renovations"  
 end
 def loopBookArray(member)
-      # [0] noOver [1] Over
+      # [0] noOverDue [1] Over
       bookOut=[[],[]]   
-      for i in 0 ... member.get_books.size############ < @@calendar
+      for i in 0 ... member.get_books.size
         if  ((member.get_books.size > 0)&&
         (member.get_books[i].get_due_date() <= @calendar.get_date() ))
           # bookOut[1].push(member.get_books[i].title())
@@ -435,23 +367,6 @@ end
         end 
       end     
     end
-     
-   # print "#{n} has overdue \n"
-   # t[1].each do |i|
-   #   print "#{i} , "
-   # end
-     
-=begin
-    for i in 0 ... @@books.size
-      if  (@@books[i].get_due_date() >= @@calendar.get_date() )
-        # m= bookBorrowed[0].getId()
-        puts "$$"
-        puts id = @@books[i].id
-      else
-        puts "NO $$"
-      end
-    end
-=end
   end
   
   def readFile()
@@ -477,9 +392,7 @@ end
   def makeBookList(i,id,title,author)
     @@books[i] = Book.new(id,title,author)
   end
-  def getBookList ()
-    return @@books
-  end
+
 
   def createCalendar()
     if @@isCalOn == false
@@ -491,7 +404,13 @@ end
   end
 end
 
+
+
 ###########################################START
+
+=begin 
+
+
 begin
 l=Library.new();
 puts " The Library Is open #{l.open()}"
@@ -572,3 +491,8 @@ end
 
 puts "l.getCurrentMember.bookBorrowed)   "
 puts l.getCurrentMember.bookBorrowed.size   
+
+
+
+
+######################################################################## end
