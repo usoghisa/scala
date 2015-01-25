@@ -7,74 +7,58 @@ import java.util.Scanner
 import scala.io.Source
 import java.io._
 import java.lang.{ StringBuilder => JavaStringBuilder }
-import Array._
-object playFairCipherObj {
-  private var validateKey: String = ""
-  private var cipher: String = ""
-  private val maxKeyLeng = 6
-  private val minKeyLeng = 4
-  private val fileNameToEncode = "src\\playFairCipherPack\\toEncod.txt"
-  private var toEncod: String = ""
-  val alphabet = "abcdefghiklmnopqrstuvwxyz"
 
+object playFairCipherObj {
+  
+  private val maxKeyLeng = 12
+  private val minKeyLeng = 4
+  private val toEncodfilename = "src\\playFairCipherPack\\toEncod.txt"
+  private var toEncod: String = ""   
+   
   def main(arg: Array[String]) {
+    
+   
+
+    /* 
+    var toEncod2: String = "bnmbnm bnm sdfasf MMMM EEEE ,." 
+    toEncod2 = toEncod2.toLowerCase().replaceAll("[^a-z]", "");//no white space 
+     
+    // http://www.tutorialspoint.com/scala/scala_file_io.htm
+    val writer = new PrintWriter(new File("src\\playFairCipherPack\\test.txt"))
+    writer.write("Hello Scala")
+    writer.close()
+
+    println("Following is the content read:")
+    Source.fromFile("src\\playFairCipherPack\\test.txt").foreach {
+      print
+    }*/
+
     print("Choose 1 encode and ENTER\nChoose 2 decode and ENTER\nChoose 3 quit and ENTER \n")
     validInputChoice()
+
+
   }
 
   def encode() {
-    validateKeyword()
-    mkCipher()
-    println("This your valid KeyWord.." + validateKey)
-    mkEncodeTxt()
-  }
-
-  private def mkEncodeTxt() {
-    if (!(isTxtOk(fileNameToEncode).equals("false"))) {
-      println("This is text for encode all j will be substiturte with i")
-      toEncod = (isTxtOk(fileNameToEncode).replaceAll("\n", " "))
-      toEncod = toEncod.toLowerCase().replaceAll("[^a-z ]", "") // preserve single whitespace
-      println(toEncod);
-      toEncod = toEncod.replaceAll("""\s+""", "") // white space yes ok
-      toEncod = toEncod.replaceAll("j", "i")
-      println(toEncod);
-      println(toEncod.replaceAll("[^a-z]", "")) // white space no
+    validKeyword()
+    //
+    if (!(isTxtOk(toEncodfilename).equals("false"))) {
+      println("This is text for encode")
+      toEncod = (isTxtOk(toEncodfilename).replaceAll("\n", " ") )
+      toEncod = toEncod.toLowerCase().replaceAll("[^a-z ]", "")// white ok
+      println(toEncod);println(toEncod.replaceAll("[^a-z]", ""))
     } else { println("Sorry") }
   }
 
-  private def mkCipher() {
-    cipher = (validateKey + alphabet).replaceAll("""\s+""", "").toList.distinct.mkString // make cifer
-    print("Cipher.size is " + cipher.size); println("The Cipher string is " + cipher.mkString); println("Matrix is ")
-
-    val sz = 4
-    var c = 0
-    var cipherMatrix = ofDim[Char](sz + 1, sz + 1)
-
-    for (i <- 0 to sz) {
-      for (j <- 0 to sz) {
-        cipherMatrix(i)(j) = cipher(c);
-        c = c + 1
-      }
-    }
-
-    // Print two dimensional array
-    for (i <- 0 to sz) {
-      for (j <- 0 to sz) {
-        print(cipherMatrix(i)(j) + " ");
-      }
-      println();
-    }
-  }
-
   def decode() {
-    validateKeyword()
+    validKeyword()
     print("dencode ")
   }
 
   def isTxtOk(fileName: String): String = {
     var s = ""
     try {
-      for (line <- Source.fromFile(fileNameToEncode).getLines) {
+      for (line <- Source.fromFile(toEncodfilename).getLines) {
         s += line + "\n"
         // println(line)
       }
@@ -82,23 +66,18 @@ object playFairCipherObj {
       case e: FileNotFoundException => println("Couldn't find that file. I can not encode.")
       case e: IOException => println("Got an IOException! I can not encode.")
     }
-    if (s != "") s else "false"
+    if (s != "")  s else "false"
   }
 
-  def validateKeyword() {
+  def validKeyword() {
     var vld = false
     do {
-      val keyWord = readLine("Type your keyword between 4 and 6 character \nNO NUMBER NO SPACE NO UPPERCASE NO DUPLICATE \nThe letter \"j\" will be substitute with  \"i\" \n>")
-      def isOnlyChars(keyWord: String) = keyWord.matches("^[a-z]*$")
+      val keyWord = readLine("Type your keyword between 4 and 12 character no number \n>")
+      def isOnlyChars(keyWord: String) = keyWord.matches("^[a-zA-Z]*$")
       def isLessMaxKeyLeng(keyWord: String) = if (keyWord.length() <= maxKeyLeng) true else false
       def isOkMinKeyLeng(keyWord: String) = if (keyWord.length() >= minKeyLeng) true else false
-      def isNoDupLet(keyWord: String) = if (keyWord.toList == keyWord.toList.distinct) true else false
-      if (isLessMaxKeyLeng(keyWord) &&
-        isOnlyChars(keyWord) &&
-        isOkMinKeyLeng(keyWord) &&
-        isNoDupLet(keyWord)) { vld = true; validateKey = keyWord.replace("j", "i") }
+      if (isLessMaxKeyLeng(keyWord) && isOnlyChars(keyWord) && isOkMinKeyLeng(keyWord)) { vld = true }
     } while (!vld)
-
   }
 
   def validInputChoice() {
