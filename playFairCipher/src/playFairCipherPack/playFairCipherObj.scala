@@ -23,7 +23,7 @@ object playFairCipherObj {
     //print("Choose 1 encode and ENTER\nChoose 2 decode and ENTER\nChoose 3 quit and ENTER \n")
     // validInputChoice()
   }
-// this copy to be cancel
+
   private def mkCipher2() {
     var cipherT = ("password" + alphabet).replaceAll("""\s+""", "").toList.distinct.mkString // make cipher
     print("cipherT.size is " + cipherT.size); println("The cipherT string is " + cipherT.mkString); println("Matrix is ")
@@ -40,48 +40,24 @@ object playFairCipherObj {
         print(cipherMatrix(i)(j) + " ");
       }
       println()
-    }// find letter in chifer
-
+    }
+    if (findChar('j') == (-1,-1)) print("sorry")else print(findChar('j')) 
   }
- 
-  mkCipher2() /////////////////testin purpose only
   
-//_____________________________________________________
-  var encPair =('x','y')
-  encPair = encodeDecodePairLet('m','b')
-  println("encode m,b will be "+ encPair._1 + "," + encPair._2  )
-  encPair = encodeDecodePairLet('n','d')
-  println("encode n,d will be "+ encPair._1 + "," + encPair._2  )
-//_____________________________________________________
+  mkCipher2()
   
-   def encodeDecodePairLet(l1: Char,l2: Char):(Char,Char) = {    
-    var c1 = (-1,-1)
-    var c2 = (-1,-1)
-    var temp = (-1,-1)
-    var pair = (-1,-1,-1,-1)
-    if (findChar(l1) == (-1,-1)) {print("sorry")}else{  c1 = findChar(l1); //print("okk");
-    } 
-    if (findChar(l2) == (-1,-1)) {print("sorry")}else{ c2 = findChar(l2);//print("okk");  
-    } 
-    temp = (c1._1, c1._2)
-    c1=(c1._1,c2._2)
-    c2=(c2._1,temp._2)
-    pair=(c1._1,c1._2, c2._1,c2._2) 
-    return(cipherMatrix(pair._1)(pair._2), cipherMatrix(pair._3)(pair._4))
-  }
-   
   def findChar(p: Char): (Int,Int) = {
    var ltrCoo=(-1,-1)//Tuple
     for (i <- 0 to sz) {
       for (j <- 0 to sz) {
       if(cipherMatrix(i)(j)==p)  
       {  ltrCoo = (i,j)
-    	  //println("Find "+p)
+    	  println("Find")
       }else{(-1, -1)} 
       }
     }
-   //print(ltrCoo._1 +" "+ ltrCoo._2 ) // Tuple2 = (i,j)
-   return (ltrCoo._1,ltrCoo._2)
+   print(ltrCoo._1 +" "+ ltrCoo._2 ) // Tuple2 = (i,j)
+   return ((ltrCoo._1, ltrCoo._2))
   }
 
   //////////////////////////////////
