@@ -1,3 +1,8 @@
+#############################
+# VIP This file require collection.txt in the same folder 
+#############################
+
+
 require 'set'
 
 class Calendar
