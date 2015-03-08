@@ -407,10 +407,6 @@ end
 
 
 ###########################################START
-
-=begin 
-
-
 begin
 l=Library.new();
 puts " The Library Is open #{l.open()}"
@@ -496,3 +492,83 @@ puts l.getCurrentMember.bookBorrowed.size
 
 
 ######################################################################## end
+
+=begin 
+begin
+l=Library.new();
+puts " The Library Is open #{l.open()}"
+#l.open()
+
+puts "ooo"
+puts "getBookList() #{l.getBookList()}"
+#l.getBookList()[1].check_out(20141215)
+# add member to lib
+l.addMember(:ugo, Member.new("ugo","bbkLib"))
+l.addMember(:pep, Member.new("pep","bbkLib"))
+#l.addMember(:nino, Member.new("nino","bbkLib"))  
+
+
+
+### Borrow Book
+l.getMember()[:ugo].check_out(l.getBookList()[0])
+l.getMember()[:ugo].check_out(l.getBookList()[1])
+#l.getBookList()[0].check_out(20141215) 
+#l.getBookList()[1].check_out(20141215) 
+ 
+# puts l.getMember()[:ugo].inspect
+puts l.getMember()[:ugo].bookBorrowed[0].getId()
+puts l.getMember()[:ugo].bookBorrowed[0].get_due_date
+puts l.getMember()[:ugo].bookBorrowed[1].getId()
+
+
+l.find_all_overdue_books()
+# puts l.getMember() 
+
+  puts "call issue_card gino   #{l.issue_card('gino')}"
+  puts "call issue_card 2   #{l.issue_card('gino')}"
+  puts "call serve('gino')   #{l.serve('gino')}"
+  puts "call find_overdue_books()"
+  puts "#{l.find_overdue_books()}"
+  
+  puts "call serve('ugo')   #{l.serve('ugo')}"
+  #puts "serve('kkk')   #{l.serve('kkk')}" 
+  puts "call find_overdue_books()"
+  puts "#{l.find_overdue_books()}"
+  puts "l.check_in(1)  #{l.check_in(1)} "  
+  puts "l.check_in(22)  #{l.check_in(2)} "   
+  #puts l.search("   saga ArL tact  ttt1 ")
+  puts l.search("   TTTT  autho ")
+  #foundBook.each{|i| puts i} 
+#puts "CALL check_out(book_ids 33) #{l.check_out(33)} "    
+puts "CALL check_out(book_ids 1) #{l.check_out(1)} "   
+#puts "CALL check_out(book_ids 2) #{l.check_out(2)} "
+#puts "CALL check_out(book_ids 3) #{l.check_out(3)} "      
+#puts "CALL check_out(book_ids 4) #{l.check_out(4)} " 
+puts "CALL renew(book_ids 1) #{l.renew(1)} " 
+#puts "CALL renew(book_ids 22) #{l.renew(22)} "
+#puts "CALL close() 1 #{l.close()} "
+#puts "CALL close() 2 #{l.close()} "
+#puts "CALL quit() #{l.quit()} "
+rescue Exception => e
+  puts e.message
+end
+
+
+
+=begin
+  b= Book.new(111,"ttt","aaa")
+  b2= Book.new(222,"ttt","bbb")
+  b.check_out(20141215)
+  #puts b.title()
+  #puts b.inspect
+  #puts b.to_s
+
+  m = Member.new("ug","lug")
+  m.check_out(b)
+  m.check_out(b2)
+  #m.give_back(b2)
+  puts m.get_books()
+  m.send_overdue_notice(" book is overdue")
+=end
+
+###############################
