@@ -5,7 +5,7 @@
   (take (drop (car(take (drop matrix row)1))column)number))
 
 (define mtrx '(
-              (0 2 3 0 5 6 0 8 9) 
+              (1 2 3 4 5 6 7 8 9) 
               (3 0 3 0 5 0 7 8 9)
               (3 2 3 0 5 6 7 8 3)
               (4 2 3 4 5 6 7 8 9)
@@ -50,7 +50,7 @@
                     (parts mtrx r8 c8 n8)
                     (parts mtrx r9 c9 n9))))
 
-(print "call pivot ret 2 " ) (pivot mtrx 0 1 1 )
+(print "call pivot rtn 2 " ) (pivot mtrx 0 1 1 )
 (print "rtn #t #f is num  ret f " ) (number? (pivot mtrx 0 0 1 ))
 (print "is 0  " )(= 0 (pivot mtrx 1 0 1 ))
 
@@ -76,11 +76,11 @@
           6 0 1 
           7 0 1 
           8 0 1))
+#|MULTYLINE COMMENT|#
 (print "col1 " ) col1
 (print "row1 " )(row 0 0 0) 
 (print "singlr ELE r2 c8 n1 ")(car(parts mtrx 2 8 1))
 (print "rtn set 6 4 5 r c n ")(car(parts mtrx 6 4 5)) ;r c n
-
 
 ;(map (lambda (x) (= 0 x)) row1)
 (define (changeZero row1)
@@ -89,32 +89,55 @@
          ((> 0 n))
          (else n)))row1))
 
-(define(changeAllZero i)
-  (changeZero (row i i i))
-  (+ i 1)
-  (changeAllZero i))
+(define mtrxSet(list 
+ (changeZero (row 0 0 0))
+ (changeZero (row 1 1 1))
+ (changeZero (row 2 2 2))
+ (changeZero (row 3 3 3)) 
+ (changeZero (row 4 4 4))
+ (changeZero (row 5 5 5)) 
+ (changeZero (row 6 6 6))
+ (changeZero (row 7 7 7))
+ (changeZero (row 8 8 8))))
+(display  "matrix with 0 substitute with set \n" ) 
+mtrxSet
 
-(changeZero (row 0 0 0))
+(print "call pivot rtn set " ) (pivot mtrxSet 1 1 1 )
 
-(print "r__________ " );(changeAllZero )
+(print "remove n 2 from set " )(set-remove (pivot mtrxSet 1 1 1 ) 2 )
 
-(print "r0 " )(changeZero (row 0 0 0))
-(print "r1 " )(changeZero (row 1 1 1))
-(print "r2 " )(changeZero (row 2 2 2))
-(print "r3 " )(changeZero (row 3 3 3)) 
-(print "r4 " )(changeZero (row 4 4 4))
-(print "r5 " )(changeZero (row 5 5 5)) 
-(print "r6 " )(changeZero (row 6 6 6))
-(print "r7 " )(changeZero (row 7 7 7))
-(print "r8 " )(changeZero (row 8 8 8))   
+(display  "remove x = 3 from set \n" )
+#||#
+(let*((x(pivot mtrxSet 1 0 1 )))
+  (set-remove (pivot mtrxSet 1 1 1 ) x ))
+(let* (
+       (mS mtrxSet)
+       (x (pivot mS 1 0 1 ))
+       )
+  (display  "matrix with set in let* \n" )
+  (set-remove (pivot mS 1 1 1 ) x )
+ mS )
+
+(let*((x (pivot mtrxSet 1 0 1 )))
+  (display  "matrix with set in let*2 \n" )
+  (set-remove (pivot mtrxSet 1 1 1 ) x )
+  mtrxSet)
 
 
 
-(let* ((x 3)
-(y (+ x 1)))
+
+
+
+
+
+
+#|HELPING FUNC__________
+
+(let* (
+       (x 3)
+(y (+ x 1))
+)
 (print "+x y")(+ x y))
-
-
 
 ;;func
 (define (double x)
@@ -135,6 +158,8 @@
 (define (factorial n)
 (acc-factorial n 1))
 (define (acc-factorial n sofar)
+  
 (if (zero? n)
 sofar
 (acc-factorial (- n 1) (* sofar n))))
+|#
