@@ -7,19 +7,21 @@
 %% not diagonally.
 %% For example,
 %% solve([3,2], [2,6], [[3,2], [3,3], [2,3], [1,3], [1,4], [1,5], [1,6], [2,6]]).
-%% ---
-u(m,1).
-mazeSize(3, 3).
-barrier(2, 2).
-barrier(3, 2).
+%% -------------------------------------------------------------
+% consult('maze.pl').
+% CALL ?- solve(From, To, Path). 
+% use semicolon ; to see the path
 
-%% We start by defining the database of facts which describe the paths between points
-path([1,1],[1,2]).
-path([1,2],[1,3]).
-path([2,3],[3,3]).
-route(X,X).
-route(X,Y) :- path(X,Z),
-			\+ barrier(X, Y),
-			route(Z,Y) .
+path([0,0], [1,0],[2,0]).
+path([2,0], [2,1],[2,2]).
+path([2,2], [2,3]).
 
-%% CALL route(X,Y).
+solve(From, To, Path):-
+  solve(From, To, [], Path).
+
+solve(X, X, T, T).
+solve(X, Y, T, NT) :-
+    (path(X,Z) ; path(Z, X)),
+    \+ member(Z,T),
+    solve(Z, Y, [Z|T], NT).
+	
