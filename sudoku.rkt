@@ -115,14 +115,80 @@ mtrxSet
 (print "remove n 4 from set2 " )(set-remove (set 1 3 4 ) (set-first (set 4)) )
 (print "remove (set 2) from set " )(set-remove (pivot mtrxSet 1 1 1 ) (set-first(pivot mtrxSet 1 0 1 )) )
 
-(define (trasform mtrxSet r) 
-  (set! mtrxSet(list
-                r
-                (set-remove(pivot mtrxSet 1 1 1 )(set-first(pivot mtrxSet 1 0 1 )))))
-  (print "x" )mtrxSet )
+;(removePivFromSet mtrxSet (row 0 0 8 mtrxSet))
 
-(trasform mtrxSet (row 0 0 8 mtrxSet))
 
 (print "set-first") (set-first (pivot mtrxSet 1 0 1 ));(set-rest(pivot mtrxSet 1 0 1 )) 
 (print "set-count-element")(set-count(pivot mtrxSet 1 1 1 ))
-;http://stackoverflow.com/questions/7910714/modify-part-of-list-using-set
+
+(define curSingPiv #f)
+(define curSets #f)
+
+(define (setCurent r c n)                  
+  (cond [(>(set-count(pivot mtrxSet r c n ))1)(set! curSets(pivot mtrxSet r c n ))]
+        [(=(set-count(pivot mtrxSet r c n ))1)(set! curSingPiv (set-first(pivot mtrxSet r c n )))]))
+
+(setCurent 1 1 1 )
+(setCurent 0 1 1 )
+
+(print "curSingPiv1")curSingPiv
+(print "curSets1")curSets
+
+(define(remPivFromSet curSets curSingPiv)
+  (set! curSets(set-remove curSets curSingPiv))
+  (print "curSets inside")curSets);; this work remove 2 ;;;;;;;;;;HERE;;;;;;;;;;;;;
+
+
+(remPivFromSet curSets curSingPiv )
+(print "curSets2")curSets ;; this NOT working 2 is still in the set ;;;;;;;;;;HERE;;;;;;;;;;;;;
+ 
+(print "curSingPiv2") curSingPiv
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#|HELPING FUNC__________
+
+(let* (
+       (x 3)
+(y (+ x 1))
+)
+(print "+x y")(+ x y))
+
+;;func
+(define (double x)
+(* 2 x))
+; conditional 
+(define (my-max x y)
+(if (> x y) x y))
+(define (sign n)
+   (cond ((> n 0) 1)
+         ((< n 0) -1)
+         (else 0)))(sign 10)
+;fac
+(define (std-factorial n)
+  (if (zero? n)
+      1
+      (* n (std-factorial (- n 1)))))
+; tail rec
+(define (factorial n)
+(acc-factorial n 1))
+(define (acc-factorial n sofar)
+  
+(if (zero? n)
+sofar
+(acc-factorial (- n 1) (* sofar n))))
+|#
