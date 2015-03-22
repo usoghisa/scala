@@ -108,7 +108,7 @@
  (changeToSet (row 8 8 8 mtrx))
 ))
 
-(display  "^matrix with n substitute with set is mtrxSet \n" ) 
+(display  "matrix with n substitute with set is mtrxSet \n" ) 
 mtrxSet
 (print "call pivot rtn set " ) (pivot mtrxSet 1 1 1 )
 (print "remove n 9 from set " )(set-remove (pivot mtrxSet 1 1 1 ) 9 )
@@ -116,80 +116,46 @@ mtrxSet
 (print "remove (set 2) from set " )(set-remove (pivot mtrxSet 1 1 1 ) (set-first(pivot mtrxSet 1 0 1 )) )
 
 ;(removePivFromSet mtrxSet (row 0 0 8 mtrxSet))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (replace lst x y)
+  (cond
+    [(empty? lst) lst]
+    [(list? (first lst)) (cons (replace (first lst) x y) (replace (rest lst) x y))]
+    [(equal? (first lst) x) (cons y (replace (rest lst) x y))]
+    [else (cons (first lst) (replace (rest lst) x y))]))
 
+(define (extract matrix row column number)
+  (take(drop(car(take(drop matrix row)1))column)number))
 
-(print "set-first") (set-first (pivot mtrxSet 1 0 1 ));(set-rest(pivot mtrxSet 1 0 1 )) 
-(print "set-count-element")(set-count(pivot mtrxSet 1 1 1 ))
+(define (manipulate matrix row column number changeSet changeSetTo )
+  (replace (extract matrix row column number) changeSet changeSetTo))
 
-(define curSingPiv #f)
-(define curSets #f)
+(define(trans matrix row column number changeSet changeSetTo)
+  (let ([inner (take matrix row)]
+        [remainder (drop matrix row)])  
+    (cons (car inner) 
+          (list 
+           (flatten
+            (list
+             (take(first(take remainder 1))column)
+             (manipulate matrix row column number changeSet changeSetTo)
+             (drop(first(take remainder 1))(+ column number)) 
+             ))
+           (first(take(drop remainder row)(-(length matrix) (+ row 1))))
+           (first(rest(take(drop remainder row)(-(length matrix) (+ row 1)))))
+           (first(rest(rest(take(drop remainder row)(-(length matrix) (+ row 1))))))
+           (first(rest(rest(rest(take(drop remainder row)(-(length matrix) (+ row 1)))))))
+           (first(rest(rest(rest(rest(take(drop remainder row)(-(length matrix) (+ row 1)))))))) 
+           (first(rest(rest(rest(rest(rest(take(drop remainder row)(-(length matrix) (+ row 1)))))))))
+           (first(rest(rest(rest(rest(rest(rest(take(drop remainder row)(-(length matrix) (+ row 1))))))))))
+           )
+          )
+    )
+  )
+;(define (trans matrix row column number changeSet changeSetTo)
+(print "remove (set 2) from set r1 c1 " )
+;(trans mtrxSet 1 1 1 (pivot mtrxSet 1 1 1 ) (set-remove (pivot mtrxSet 1 1 1 )(set-first(pivot mtrxSet 1 0 1 )) ) )
+(set! mtrxSet(trans mtrxSet 1 1 1 (pivot mtrxSet 1 1 1 ) (set-remove (pivot mtrxSet 1 1 1 )(set-first(pivot mtrxSet 1 0 1 )) ) ))
+mtrxSet
 
-(define (setCurent r c n)                  
-  (cond [(>(set-count(pivot mtrxSet r c n ))1)(set! curSets(pivot mtrxSet r c n ))]
-        [(=(set-count(pivot mtrxSet r c n ))1)(set! curSingPiv (set-first(pivot mtrxSet r c n )))]))
-
-(setCurent 1 1 1 )
-(setCurent 0 1 1 )
-
-(print "curSingPiv1")curSingPiv
-(print "curSets1")curSets
-
-(define(remPivFromSet curSets curSingPiv)
-  (set! curSets(set-remove curSets curSingPiv))
-  (print "curSets inside")curSets);; this work remove 2 ;;;;;;;;;;HERE;;;;;;;;;;;;;
-
-
-(remPivFromSet curSets curSingPiv )
-(print "curSets2")curSets ;; this NOT working 2 is still in the set ;;;;;;;;;;HERE;;;;;;;;;;;;;
- 
-(print "curSingPiv2") curSingPiv
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#|HELPING FUNC__________
-
-(let* (
-       (x 3)
-(y (+ x 1))
-)
-(print "+x y")(+ x y))
-
-;;func
-(define (double x)
-(* 2 x))
-; conditional 
-(define (my-max x y)
-(if (> x y) x y))
-(define (sign n)
-   (cond ((> n 0) 1)
-         ((< n 0) -1)
-         (else 0)))(sign 10)
-;fac
-(define (std-factorial n)
-  (if (zero? n)
-      1
-      (* n (std-factorial (- n 1)))))
-; tail rec
-(define (factorial n)
-(acc-factorial n 1))
-(define (acc-factorial n sofar)
-  
-(if (zero? n)
-sofar
-(acc-factorial (- n 1) (* sofar n))))
-|#
 
